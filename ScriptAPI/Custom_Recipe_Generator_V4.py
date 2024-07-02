@@ -269,7 +269,7 @@ class RecipeGenerator(tk.Tk):
 
         self.RecipeId = self.Text_Data[18].get("1.0", tk.END).strip() or " "
         self.Pattern = ["".join([self.Text_Data[i].get("1.0", tk.END).strip() or " " for i in range(Start, Start + 3)]) for Start in range(21, 30, 3)]       
-        self.Key = {self.Text_Data[i].get("1.0", tk.END).strip(): self.Text_Data[i+1].get("1.0", tk.END).strip() for i in range(0, len(self.Text_Data)-1, 2) if self.Text_Data[i].get("1.0", tk.END).strip() != "" and self.Text_Data[i+1].get("1.0", tk.END).strip() != ""}   
+        self.Key = {self.Text_Data[i].get("1.0", tk.END).strip(): self.Text_Data[i+1].get("1.0", tk.END).strip() for i in range(0, len(self.Text_Data)-12, 2) if self.Text_Data[i].get("1.0", tk.END).strip() != "" and self.Text_Data[i+1].get("1.0", tk.END).strip() != ""}   
         self.ItemId = self.Text_Data[19].get("1.0", tk.END).strip() or " "
         self.ItemAmount = self.Text_Data[20].get("1.0", tk.END).strip() or " "
 
