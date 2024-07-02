@@ -267,19 +267,27 @@ class RecipeGenerator(tk.Tk):
 
         self.Station = self.Current_Station
 
-        self.RecipeId = self.Text_Data[18].get("1.0", tk.END).strip() or " "
-        self.Pattern = ["".join([self.Text_Data[i].get("1.0", tk.END).strip() or " " for i in range(Start, Start + 3)]) for Start in range(21, 30, 3)]       
-        self.Key = {self.Text_Data[i].get("1.0", tk.END).strip(): self.Text_Data[i+1].get("1.0", tk.END).strip() for i in range(0, len(self.Text_Data)-12, 2) if self.Text_Data[i].get("1.0", tk.END).strip() != "" and self.Text_Data[i+1].get("1.0", tk.END).strip() != ""}   
-        self.ItemId = self.Text_Data[19].get("1.0", tk.END).strip() or " "
-        self.ItemAmount = self.Text_Data[20].get("1.0", tk.END).strip() or " "
-
-        # Checks If The ItemAmount Is A Valid Number
-        if self.ItemAmount.isdigit() == False:
-            self.ItemAmount = 0
+        self.RecipeId = None
+        self.Pattern = None
+        self.Key = None
+        self.ItemId = None
+        self.ItemAmount = None
+        self.Input = None
+        self.Output = None
 
         Downloads_Folder = os.path.join(os.path.expanduser("~"), "Downloads")
 
         if self.Station == "Crafting Table":
+
+            self.RecipeId = self.Text_Data[18].get("1.0", tk.END).strip() or " "
+            self.Pattern = ["".join([self.Text_Data[i].get("1.0", tk.END).strip() or " " for i in range(Start, Start + 3)]) for Start in range(21, 30, 3)]       
+            self.Key = {self.Text_Data[i+1].get("1.0", tk.END).strip(): {"item": self.Text_Data[i].get("1.0", tk.END).strip()} for i in range(0, len(self.Text_Data)-12, 2) if self.Text_Data[i].get("1.0", tk.END).strip() != "" and self.Text_Data[i+1].get("1.0", tk.END).strip() != ""}
+            self.ItemId = self.Text_Data[19].get("1.0", tk.END).strip() or " "
+            self.ItemAmount = self.Text_Data[20].get("1.0", tk.END).strip() or " "
+
+            # Checks If The ItemAmount Is A Valid Number
+            if self.ItemAmount.isdigit() == False:
+                self.ItemAmount = 0
 
             CraftingData = {
                 "format_version": "1.20.10",
@@ -293,6 +301,11 @@ class RecipeGenerator(tk.Tk):
                     "priority": 0,
                     "pattern": self.Pattern,
                     "key": self.Key,
+                    "unlock": [
+                        {
+                            "context": "AlwaysUnlocked"
+                        }
+                    ],
                     "result": {
                         "item": self.ItemId,
                         "count": int(self.ItemAmount)
@@ -300,11 +313,40 @@ class RecipeGenerator(tk.Tk):
                 }
             }
 
+            FixedFileName = self.RecipeId.replace(":", "_")
             Json_Data = json.dumps(CraftingData, indent=4)
-            filename = os.path.join(Downloads_Folder, f"{self.RecipeId}.json")
+            FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
 
-            # Write JSON data to file
-            with open(filename, 'w') as f:
+            # Write JSON Data To A File
+            with open(FileName, 'w') as f:
+                f.write(Json_Data)
+        
+        if self.Station == "Furnace":
+            
+            self.RecipeId = self.Text_Data[18].get("1.0", tk.END).strip() or " "
+            self.Input = self.Text_Data[0].get("1.0", tk.END).strip() or " "
+            self.Output = self.Text_Data[2].get("1.0", tk.END).strip() or " "
+
+            FuranceData = {
+                "format_version": "1.20.10",
+                "minecraft:recipe_furnace": {
+                    "description": {
+                        "identifier": self.RecipeId
+                    },
+                    "tags": [
+                        "furnace"
+                    ],
+                    "input": self.Input,
+                    "output": self.Output,
+                }
+            }
+
+            FixedFileName = self.RecipeId.replace(":", "_")
+            Json_Data = json.dumps(FuranceData, indent=4)
+            FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
+
+            # Write JSON Data To A File
+            with open(FileName, 'w') as f:
                 f.write(Json_Data)
 
     # A Function To Remove Crafting Station Assets
