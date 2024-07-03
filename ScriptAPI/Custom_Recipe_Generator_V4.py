@@ -46,8 +46,8 @@ class RecipeGenerator(tk.Tk):
         self.Background_Label = tk.Label(self)
         self.Background_Label.pack(fill="both", expand=True)
         
-        # Creates TextField Boxes
-        self.TextField_Boxes()
+        # Stores The Current Station Used
+        self.Current_Station = None
 
         # Creates A Button
         self.Create_Recipe_Button()
@@ -64,9 +64,6 @@ class RecipeGenerator(tk.Tk):
         # Bind Window Resize Event
         self.bind("<Configure>", self.Resize_Elements)
         
-        # Stores The Current Station Used
-        self.Current_Station = None
-        
         # Crafting Station Dictionaries
 
         # Crafting Table
@@ -77,6 +74,11 @@ class RecipeGenerator(tk.Tk):
         self.Furnace_Labels = {}
         self.Furnace_UI_Labels = {}
         self.Furnace_Grid_Frame = {}
+
+        # Brewing Stand
+        self.BrewingStand_Labels = {}
+        self.BrewingStand_UI_Labels = {}
+        self.Brewing_Stand_Grid_Frame = {}
 
     # A Multi-Functional File Directory Tool To Find The MasterCraft
     def SearchDirectory(self):
@@ -170,25 +172,51 @@ class RecipeGenerator(tk.Tk):
 
         Font = TkFont.Font(family="HP Simplified Jpan", size=9)
 
-        for Row in range(9):
-            for Column in range(2):
-                Text_Box = tk.Text(self.Text_Frame, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
-                Text_Box.grid(row=Row, column=Column)
-                self.Text_Data.append(Text_Box)
+        if self.Current_Station == "Crafting Table":
 
-        RecipeIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
-        RecipeIdTextBox.place(x=200, y=250)
-        self.Text_Data.append(RecipeIdTextBox)
+            for Row in range(9):
+                for Column in range(2):
+                    Text_Box = tk.Text(self.Text_Frame, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+                    Text_Box.grid(row=Row, column=Column)
+                    self.Text_Data.append(Text_Box)
 
-        ItemIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
-        ItemIdTextBox.place(x=200, y=350)
-        self.Text_Data.append(ItemIdTextBox)
+            self.RecipeIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.RecipeIdTextBox.place(x=200, y=250)
+            self.Text_Data.append(self.RecipeIdTextBox)
 
-        ItemAmountTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
-        ItemAmountTextBox.place(x=200, y=450)
-        self.Text_Data.append(ItemAmountTextBox)
+            self.ItemIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.ItemIdTextBox.place(x=200, y=350)
+            self.Text_Data.append(self.ItemIdTextBox)
 
-        self.Text_Frame.place(x=10, y=100)
+            self.ItemAmountTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.ItemAmountTextBox.place(x=200, y=450)
+            self.Text_Data.append(self.ItemAmountTextBox)
+
+            self.Text_Frame.place(x=10, y=100)
+
+        if self.Current_Station == "Furnace":
+
+            self.RecipeIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.RecipeIdTextBox.place(x=125, y=450)
+            self.Text_Data.append(self.RecipeIdTextBox)
+
+            self.ItemIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.ItemIdTextBox.place(x=325, y=450)
+            self.Text_Data.append(self.ItemIdTextBox)
+
+            self.ItemAmountTextBox = None
+
+        if self.CraftingStation == "Brewing Stand":
+            
+            self.RecipeIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.RecipeIdTextBox.place(x=125, y=450)
+            self.Text_Data.append(self.RecipeIdTextBox)
+
+            self.ItemIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.ItemIdTextBox.place(x=325, y=450)
+            self.Text_Data.append(self.ItemIdTextBox)
+
+            self.ItemAmountTextBox = None
 
     # A Function To Setup The Dropdown Menu
     def Create_DropDown(self):
@@ -213,6 +241,7 @@ class RecipeGenerator(tk.Tk):
         selection_dropdown.place(x=10, y=40)
 
     def Create_Recipe_Button(self):
+
         Button_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "Textures", "ButtonBackground.png")
         Button_Hover_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "Textures", "SelectedBackground.png")
 
@@ -248,6 +277,12 @@ class RecipeGenerator(tk.Tk):
         
         self.Current_Station = Selection
 
+        # Removes TectField Boxes
+        self.Destroy_TextFieldBoxes()
+
+        # Creates TextField Boxes
+        self.TextField_Boxes()
+
         # Remove All Other Crafting Stations If Not Selected
         self.CraftingStationRemove(Selection)
 
@@ -274,6 +309,7 @@ class RecipeGenerator(tk.Tk):
         self.ItemAmount = None
         self.Input = None
         self.Output = None
+        self.Reagent = None
 
         Downloads_Folder = os.path.join(os.path.expanduser("~"), "Downloads")
 
@@ -348,28 +384,72 @@ class RecipeGenerator(tk.Tk):
             # Write JSON Data To A File
             with open(FileName, 'w') as f:
                 f.write(Json_Data)
+        
+        if self.Station == "Brewing Stand":
+
+            self.RecipeId = self.Text_Data[18].get("1.0", tk.END).strip() or " "
+            self.Input = self.Text_Data[0].get("1.0", tk.END).strip() or " "
+            self.Output = self.Text_Data[2].get("1.0", tk.END).strip() or " "
+            self.Reagent = self.Text_Data[3].get("1.0", tk.END).strip() or " "
 
     # A Function To Remove Crafting Station Assets
     def CraftingStationRemove(self, Current_Station):
-        
+
         for Station, Label in self.Crafting_Labels.items():
+
             if Station != Current_Station:
-                Label.place_forget()
-        
+                if Label:
+                    Label.place_forget()
+
             if self.Crafting_Grid_Frame:
                 self.Crafting_Grid_Frame.place_forget()
 
         for Station, Label in self.Furnace_Labels.items():
+
             if Station != Current_Station:
-                Label.place_forget()
+                if Label:
+                    Label.place_forget()
 
             for Station, Label in self.Furnace_UI_Labels.items():
                 if Station != Current_Station:
-                    Label.place_forget()
+                    if Label:
+                        Label.place_forget()
 
             if self.Furnace_Grid_Frame:
                 self.Furnace_Grid_Frame.place_forget()
-        
+
+        for Station, Label in self.BrewingStand_Labels.items():
+
+            if Station != Current_Station:
+                if Label:
+                    Label.place_forget()
+
+            for Station, Label in self.BrewingStand_UI_Labels.items():
+                if Station != Current_Station:
+                    if Label:
+                        Label.place_forget()
+            
+            if self.Brewing_Stand_Grid_Frame:
+                self.Brewing_Stand_Grid_Frame.place_forget()
+
+    def Destroy_TextFieldBoxes(self):
+
+        if hasattr(self, 'Text_Frame') and self.Text_Frame:
+
+            if self.Text_Frame:
+                self.Text_Frame.place_forget()
+
+            if self.RecipeIdTextBox:
+                self.RecipeIdTextBox.place_forget()
+
+            if self.ItemIdTextBox:
+                self.ItemIdTextBox.place_forget()
+
+            if self.ItemAmountTextBox:
+                self.ItemAmountTextBox.place_forget()
+
+            self.Text_Frame = None
+
     def CraftingTable(self):
 
         self.Crafting_Table_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Crafting_Table.png")).resize((600, 600))
@@ -410,7 +490,7 @@ class RecipeGenerator(tk.Tk):
         self.Furnace_UI_Image = ImageTk.PhotoImage(self.Furnace_UI_File)
 
         self.Furnace_UI_Label = tk.Label(self, image=self.Furnace_UI_Image, bg="black")
-        self.Furnace_UI_Label.place(x=self.Screen_Width - 550, y=200)
+        self.Furnace_UI_Label.place(x=self.Screen_Width - 1524, y=100)
 
         self.Furnace_Labels["Furnace"] = self.Furnace_Label
         self.Furnace_UI_Labels["Furnace UI"] = self.Furnace_UI_Label
@@ -430,25 +510,49 @@ class RecipeGenerator(tk.Tk):
                         RowSpacer = tk.Frame(self.Furnace_Grid_Frame, height=68, bg="#C7C7C7")
                         RowSpacer.grid(row=Row*2+1, column=Column)
                         
-            self.Furnace_Grid_Frame.place(x=self.Screen_Width - 426, y=262)
-
+            self.Furnace_Grid_Frame.place(x=self.Screen_Width - 1400, y=162)
 
         Furnace_Grid()
     
     def BrewingStand(self):
-        # Keep a reference to the image object
-        self.BrewingStand_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "BrewingStand.png")).resize((600, 600))
+        
+        self.BrewingStand_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Brewing_Stand.png")).resize((600, 600))
         self.BrewingStand_Image = ImageTk.PhotoImage(self.BrewingStand_File)
     
         self.BrewingStand_Label = tk.Label(self, image=self.BrewingStand_Image, bg="black")
-        self.BrewingStand_Label.place(x=0, y=0)
+        self.BrewingStand_Label.place(x=self.Screen_Width - 600, y=0)
+        
+        # Furnace UI Image
+        self.BrewingStand_UI_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Brewing_Stand_UI.png")).resize((500, 300))
+        self.BrewingStand_UI_Image = ImageTk.PhotoImage(self.BrewingStand_UI_File)
+
+        self.BrewingStand_UI_Label = tk.Label(self, image=self.BrewingStand_UI_Image, bg="black")
+        self.BrewingStand_UI_Label.place(x=self.Screen_Width - 1524, y=100)
 
         # Add to the dictionary
-        self.Crafting_Labels["Brewing Stand"] = self.BrewingStand_Label
+        self.BrewingStand_Labels["Brewing Stand"] = self.BrewingStand_Label
+        self.BrewingStand_UI_Labels["Brewing Stand UI"] = self.BrewingStand_UI_Label
+
+        def Brewing_Stand_Grid():
+
+            self.Brewing_Stand_Grid_Frame = tk.Frame(self, bg="#C7C7C7")
+            self.Brewing_Stand_Grid_Frame.pack()
+
+            for Row in range(2):
+                for Column in range(1):
+                    Text_Box = tk.Text(self.Brewing_Stand_Grid_Frame, wrap=tk.WORD, width=8, height=4, bg="#8D8D8D")
+                    Text_Box.grid(row=Row*2, column=Column)
+
+                    if Row < 1:
+                        RowSpacer = tk.Frame(self.Brewing_Stand_Grid_Frame, height=68, bg="#C7C7C7")
+                        RowSpacer.grid(row=Row*2+1, column=Column)
+                        
+            self.Brewing_Stand_Grid_Frame.place(x=self.Screen_Width - 1400, y=162)
+        
+        Brewing_Stand_Grid()
         
 def Main():
     App = RecipeGenerator()
     App.mainloop()
 
 if __name__ == "__main__":
-    Main()
