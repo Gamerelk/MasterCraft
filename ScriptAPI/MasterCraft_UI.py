@@ -31,6 +31,9 @@ class MasterCraftApp(tk.Tk):
         # Set Initial Button Array
         self.Buttons = []
 
+        # Set Selected Button Data
+        self.SelectedButton = None
+
         # Set The Title Of The Window
         self.title("MasterCraft")
 
@@ -216,13 +219,14 @@ class MasterCraftApp(tk.Tk):
     # A List Of Functions For Each Button
     def OBJ_To_JSON_Converter(self):
 
-        Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "ScriptAPI", "OBJ_To_JSON_Beta_V6.py")
+        Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "ScriptAPI", "OBJ_To_JSON_Beta.py")
         call(["python", Script_Path])
-
+        
     def Recipe_Generator(self):
 
-        Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "ScriptAPI", "Custom_Recipe_Generator_V2.py")
-        call(["python", Script_Path])
+        Selected = "Recipe Generator"
+        self.destroy()
+        ReturnSequence(Selected)
 
     def button3_action(self):
         print("Button 3 was pressed")
@@ -239,6 +243,47 @@ class MasterCraftApp(tk.Tk):
 
     def On_Leave(self, event, Button, index):
         Button.config(image=self.Button_Images['default'][index])
+
+def ReturnSequence(Selection):
+
+        # Getting User Pathway
+        User_Home = os.path.expanduser("~")
+        InitialDirectory = '/'
+        DirectoryName = 'MasterCraft'
+
+        def SearchDirectory():
+
+            Common_User_Directories = ['Desktop', 'Downloads', 'Pictures', 'Documents', 'Music', 'Videos']
+
+            def Common_Directory():
+                for Common_Directories in Common_User_Directories:
+                    Common_Dir = os.path.join(User_Home, Common_Directories)
+                    for root, dirnames, _ in os.walk(Common_Dir):
+                        if DirectoryName in dirnames:
+                            return os.path.join(root, DirectoryName)
+                return None
+
+            def Full_Search_Directory():
+                matches = []
+                for root, dirnames, _ in os.walk(InitialDirectory):
+                    if DirectoryName in dirnames:
+                        matches.append(os.path.join(root, DirectoryName))
+                return matches
+
+            def DirectoryPathfinding():
+                InitialDirectoryTest = Common_Directory()
+                if InitialDirectoryTest is None:
+                    return Full_Search_Directory()
+                else:
+                    return [InitialDirectoryTest]
+
+            return DirectoryPathfinding()
+
+        MasterCraftCurrentDirectory = os.path.normpath(SearchDirectory()[0])
+
+        if Selection == "Recipe Generator":
+            Script_Path = os.path.join(MasterCraftCurrentDirectory, "ScriptAPI", "Custom_Recipe_Generator.py")
+            call(["python", Script_Path])
 
 def Main():
     App = MasterCraftApp()

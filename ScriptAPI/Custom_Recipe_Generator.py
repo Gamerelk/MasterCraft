@@ -16,6 +16,8 @@ class RecipeGenerator(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        self.protocol("WM_DELETE_WINDOW", ReturnSequence)
+
         # Getting User Pathway
         self.User_Home = os.path.expanduser("~")
         self.InitialDirectory = '/'
@@ -307,12 +309,9 @@ class RecipeGenerator(tk.Tk):
 
     # A Function To Close This Window And Return To MasterCraft UI
     def Return(self):
+        self.destroy()
+        ReturnSequence()
 
-        Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "ScriptAPI", "MasterCraft_UI.py")
-        call(["python", Script_Path])
-        self.forget(self)
-
-    # A Function To Remove Textboxes
     def Destroy_TextFieldBoxes(self):
 
         if hasattr(self, 'Text_Frame') and self.Text_Frame:
@@ -799,6 +798,46 @@ class RecipeGenerator(tk.Tk):
             self.Smithing_Table_Transformation_TextBoxes["Textbox 2"] = Text_Box_2
 
         Smithing_Table_Transformation_Grid()
+
+def ReturnSequence():
+
+        # Getting User Pathway
+        User_Home = os.path.expanduser("~")
+        InitialDirectory = '/'
+        DirectoryName = 'MasterCraft'
+
+        def SearchDirectory():
+
+            Common_User_Directories = ['Desktop', 'Downloads', 'Pictures', 'Documents', 'Music', 'Videos']
+
+            def Common_Directory():
+                for Common_Directories in Common_User_Directories:
+                    Common_Dir = os.path.join(User_Home, Common_Directories)
+                    for root, dirnames, _ in os.walk(Common_Dir):
+                        if DirectoryName in dirnames:
+                            return os.path.join(root, DirectoryName)
+                return None
+
+            def Full_Search_Directory():
+                matches = []
+                for root, dirnames, _ in os.walk(InitialDirectory):
+                    if DirectoryName in dirnames:
+                        matches.append(os.path.join(root, DirectoryName))
+                return matches
+
+            def DirectoryPathfinding():
+                InitialDirectoryTest = Common_Directory()
+                if InitialDirectoryTest is None:
+                    return Full_Search_Directory()
+                else:
+                    return [InitialDirectoryTest]
+
+            return DirectoryPathfinding()
+
+        MasterCraftCurrentDirectory = os.path.normpath(SearchDirectory()[0])
+
+        Script_Path = os.path.join(MasterCraftCurrentDirectory, "ScriptAPI", "MasterCraft_UI.py")
+        call(["python", Script_Path])
 
 def Main():
     App = RecipeGenerator()
