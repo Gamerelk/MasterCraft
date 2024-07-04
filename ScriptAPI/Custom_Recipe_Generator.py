@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.font as TkFont
 from tkinter import messagebox
 from PIL import ImageTk, Image
+from subprocess import call
 import json
 import os
 import ctypes as ct
@@ -11,7 +12,7 @@ MINIMUM_WINDOW_WIDTH = 600
 MINIMUM_WINDOW_HEIGHT = 400
 
 class RecipeGenerator(tk.Tk):
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
@@ -20,7 +21,7 @@ class RecipeGenerator(tk.Tk):
         self.InitialDirectory = '/'
         self.DirectoryName = 'MasterCraft'
         self.MasterCraftCurrentDirectory = os.path.normpath(f"{self.SearchDirectory()}")[2: -2]
-
+        
         # Set Initial Window Size
         self.Screen_Width = self.winfo_screenwidth()
         self.Screen_Height = self.winfo_screenheight()
@@ -50,7 +51,7 @@ class RecipeGenerator(tk.Tk):
         self.Current_Station = None
 
         # Creates A Button
-        self.Create_Recipe_Button()
+        self.Create_Buttons()
 
         # Creates A Dropdown Menu
         self.Create_DropDown()
@@ -238,12 +239,10 @@ class RecipeGenerator(tk.Tk):
             self.Text_Data.append(self.RecipeIdTextBox)
 
             self.ItemIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
-            self.ItemIdTextBox.place(x=280, y=450)
+            self.ItemIdTextBox.place(x=380, y=450)
             self.Text_Data.append(self.ItemIdTextBox)
 
-            self.ItemAmountTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
-            self.ItemAmountTextBox.place(x=380, y=450)
-            self.Text_Data.append(self.ItemAmountTextBox)
+            self.ItemAmountTextBox = None
 
     # A Function To Setup The Dropdown Menu
     def Create_DropDown(self):
@@ -267,7 +266,8 @@ class RecipeGenerator(tk.Tk):
         selection_dropdown = tk.OptionMenu(self, Selected_Table, *DropDown_Labels, command=lambda selection: self.CraftingStation(selection))
         selection_dropdown.place(x=10, y=40)
 
-    def Create_Recipe_Button(self):
+    # Function To Setup The Buttons
+    def Create_Buttons(self):
 
         Button_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "Textures", "ButtonBackground.png")
         Button_Hover_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "Textures", "SelectedBackground.png")
@@ -284,12 +284,18 @@ class RecipeGenerator(tk.Tk):
         }
 
         Font = TkFont.Font(family="HP Simplified Jpan", size=16)
-        Button = tk.Button(self, text="Generate Recipe", image=self.Button_Images['default'], command=self.CraftingMake, compound="center", wraplength=200, width=Button_Width, height=Button_Height, highlightthickness=0, bd=0, bg=self.cget('bg'), activebackground=self.cget('bg'), font=Font)
-        Button.place(x=self.Screen_Width - Button_Width - 10, y=self.Screen_Height - 260)
-        self.Buttons.append(Button)
+        RecipeButton = tk.Button(self, text="Generate Recipe", image=self.Button_Images['default'], command=self.CraftingMake, compound="center", wraplength=200, width=Button_Width, height=Button_Height, highlightthickness=0, bd=0, bg=self.cget('bg'), activebackground=self.cget('bg'), font=Font)
+        RecipeButton.place(x=self.Screen_Width - Button_Width - 10, y=self.Screen_Height - 260)
+        self.Buttons.append(RecipeButton)
 
-        Button.bind("<Enter>", lambda event, b=Button: self.On_Enter(event, b, 'default'))
-        Button.bind("<Leave>", lambda event, b=Button: self.On_Leave(event, b, 'default'))
+        BackButton = tk.Button(self, text="Back", image=self.Button_Images['default'], command=self.Return, compound="center", wraplength=200, width=Button_Width, height=Button_Height, highlightthickness=0, bd=0, bg=self.cget('bg'), activebackground=self.cget('bg'), font=Font)
+        BackButton.place(x=self.Screen_Width - Button_Width - 10, y=self.Screen_Height - 160)
+
+        RecipeButton.bind("<Enter>", lambda event, b=RecipeButton: self.On_Enter(event, b, 'default'))
+        RecipeButton.bind("<Leave>", lambda event, b=RecipeButton: self.On_Leave(event, b, 'default'))
+
+        BackButton.bind("<Enter>", lambda event, b=BackButton: self.On_Enter(event, b, 'default'))
+        BackButton.bind("<Leave>", lambda event, b=BackButton: self.On_Leave(event, b, 'default'))
 
     def On_Enter(self, event, Button, state):
         if state == 'default':
@@ -299,6 +305,32 @@ class RecipeGenerator(tk.Tk):
         if state == 'default':
             Button.config(image=self.Button_Images['default'])
 
+    # A Function To Close This Window And Return To MasterCraft UI
+    def Return(self):
+
+        Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "ScriptAPI", "MasterCraft_UI.py")
+        call(["python", Script_Path])
+        self.forget(self)
+
+    # A Function To Remove Textboxes
+    def Destroy_TextFieldBoxes(self):
+
+        if hasattr(self, 'Text_Frame') and self.Text_Frame:
+
+            if self.Text_Frame:
+                self.Text_Frame.place_forget()
+
+            if self.RecipeIdTextBox:
+                self.RecipeIdTextBox.place_forget()
+
+            if self.ItemIdTextBox:
+                self.ItemIdTextBox.place_forget()
+
+            if self.ItemAmountTextBox:
+                self.ItemAmountTextBox.place_forget()
+
+            self.Text_Frame = None
+
     # A List Of Functions For Each Crafting Station
     def CraftingStation(self, Selection):
         
@@ -307,6 +339,8 @@ class RecipeGenerator(tk.Tk):
         # Removes TectField Boxes
         self.Destroy_TextFieldBoxes()
 
+        self.Text_Data = []
+        
         # Creates TextField Boxes
         self.TextField_Boxes()
 
@@ -328,6 +362,7 @@ class RecipeGenerator(tk.Tk):
         if Selection == "Smithing Table Transformation":
             self.SmithingTableTransformation()
 
+    # A Function To Create Recipe Files
     def CraftingMake(self):
 
         if self.Current_Station is None:
@@ -485,9 +520,8 @@ class RecipeGenerator(tk.Tk):
 
             self.RecipeId = self.Text_Data[0].get("1.0", tk.END).strip() or " "
             self.ItemId = self.Text_Data[1].get("1.0", tk.END).strip() or " "
-            self.ItemAmount = self.Text_Data[2].get("1.0", tk.END).strip() or " "
-            self.Template = self.Text_Data[3].get("1.0", tk.END).strip() or " "
-            self.Base = self.Text_Data[4].get("1.0", tk.END).strip() or " "
+            self.Template = self.Text_Data[2].get("1.0", tk.END).strip() or " "
+            self.Base = self.Text_Data[3].get("1.0", tk.END).strip() or " "
         
             SmithingTableData = {
                 "format_version": "1.20.10",
@@ -501,14 +535,11 @@ class RecipeGenerator(tk.Tk):
                     "template": self.Template,
                     "base": self.Base,
                     "addition": "minecraft:netherite_ingot",
-                    "result": [
-                        {
+                    "result": {
                             "item": self.ItemId,
-                            "count": self.ItemAmount
                         }
-                    ]
+                    }
                 }
-            }
 
             FixedFileName = self.RecipeId.replace(":", "_")
             Json_Data = json.dumps(SmithingTableData, indent=4)
@@ -522,8 +553,6 @@ class RecipeGenerator(tk.Tk):
     def CraftingStationRemove(self, Current_Station):
 
         for Station, Label in self.Crafting_Labels.items():
-            
-            self.Text_Data = []
 
             if Station != Current_Station:
                 if Label:
@@ -533,8 +562,6 @@ class RecipeGenerator(tk.Tk):
                 self.Crafting_Grid_Frame.place_forget()
 
         for Station, Label in self.Furnace_Labels.items():
-            
-            self.Text_Data = []
 
             if Station != Current_Station:
                 if Label:
@@ -550,8 +577,6 @@ class RecipeGenerator(tk.Tk):
                     TextBoxes.place_forget()
 
         for Station, Label in self.BrewingStand_Labels.items():
-
-            self.Text_Data = []
 
             if Station != Current_Station:
                 if Label:
@@ -569,8 +594,6 @@ class RecipeGenerator(tk.Tk):
         
         for Station, Label in self.Smithing_Table_Armor_Trim_Labels.items():
 
-            self.Text_Data = []
-
             if Station != Current_Station:
                 if Label:
                     Label.place_forget()
@@ -586,8 +609,6 @@ class RecipeGenerator(tk.Tk):
 
         for Station, Label in self.Smithing_Table_Transformation_Labels.items():
 
-            self.Text_Data = []
-
             if Station != Current_Station:
                 if Label:
                     Label.place_forget()
@@ -601,24 +622,7 @@ class RecipeGenerator(tk.Tk):
                 for TextBoxes in self.Smithing_Table_Transformation_TextBoxes.values():
                     TextBoxes.place_forget()
 
-    def Destroy_TextFieldBoxes(self):
-
-        if hasattr(self, 'Text_Frame') and self.Text_Frame:
-
-            if self.Text_Frame:
-                self.Text_Frame.place_forget()
-
-            if self.RecipeIdTextBox:
-                self.RecipeIdTextBox.place_forget()
-
-            if self.ItemIdTextBox:
-                self.ItemIdTextBox.place_forget()
-
-            if self.ItemAmountTextBox:
-                self.ItemAmountTextBox.place_forget()
-
-            self.Text_Frame = None
-
+    # Function To Setup The Crafting Table Data
     def CraftingTable(self):
 
         self.Crafting_Table_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Crafting_Table.png")).resize((600, 600))
@@ -645,6 +649,7 @@ class RecipeGenerator(tk.Tk):
         
         Crafting_Grid()
 
+    # Function To Setup The Furnace Data
     def Furnace(self):
         
         # Furance Image
@@ -680,6 +685,7 @@ class RecipeGenerator(tk.Tk):
 
         Furnace_Grid()
     
+    # Function To Setup The Brewing Stand Data
     def BrewingStand(self):
         
         self.BrewingStand_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Brewing_Stand.png")).resize((600, 600))
@@ -719,6 +725,7 @@ class RecipeGenerator(tk.Tk):
 
         Brewing_Stand_Grid()
     
+    # Function To Setup The Smithing Table Trim Data 
     def SmithingTableTrim(self):
 
         self.SmithingTableTrim_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Smithing_Table.png")).resize((600, 600))
@@ -758,6 +765,7 @@ class RecipeGenerator(tk.Tk):
 
         Smithing_Table_Trim_Grid()
 
+    # Function To Setup The Smithing Table Transformation Data 
     def SmithingTableTransformation(self):
         
         self.SmithingTableTransformation_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Smithing_Table.png")).resize((600, 600))
