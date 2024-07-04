@@ -80,6 +80,16 @@ class RecipeGenerator(tk.Tk):
         self.BrewingStand_UI_Labels = {}
         self.Brewing_Stand_TextBoxes = {}
 
+        # Smithing Table Armor Trim
+        self.Smithing_Table_Armor_Trim_Labels = {}
+        self.Smithing_Table_Armor_Trim_UI_Labels = {}
+        self.Smithing_Table_Armor_Trim_TextBoxes = {}
+
+        # Smithing Table Transformation
+        self.Smithing_Table_Transformation_Labels = {}
+        self.Smithing_Table_Transformation_UI_Labels = {}
+        self.Smithing_Table_Transformation_TextBoxes = {}
+
     # A Multi-Functional File Directory Tool To Find The MasterCraft
     def SearchDirectory(self):
         
@@ -212,6 +222,29 @@ class RecipeGenerator(tk.Tk):
             self.ItemIdTextBox = None
             self.ItemAmountTextBox = None
 
+        if self.Current_Station == "Smithing Table Armor Trim":
+
+            self.RecipeIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.RecipeIdTextBox.place(x=280, y=450)
+            self.Text_Data.append(self.RecipeIdTextBox)
+
+            self.ItemIdTextBox = None
+            self.ItemAmountTextBox = None
+
+        if self.Current_Station == "Smithing Table Transformation":
+
+            self.RecipeIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.RecipeIdTextBox.place(x=180, y=450)
+            self.Text_Data.append(self.RecipeIdTextBox)
+
+            self.ItemIdTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.ItemIdTextBox.place(x=280, y=450)
+            self.Text_Data.append(self.ItemIdTextBox)
+
+            self.ItemAmountTextBox = tk.Text(self, wrap=tk.WORD, width=11, height=4, bg="#8D8D8D", font=Font)
+            self.ItemAmountTextBox.place(x=380, y=450)
+            self.Text_Data.append(self.ItemAmountTextBox)
+
     # A Function To Setup The Dropdown Menu
     def Create_DropDown(self):
 
@@ -219,8 +252,8 @@ class RecipeGenerator(tk.Tk):
             "Crafting Table",
             "Furnace",
             "Brewing Stand",
-            "Untitled",
-            "Untitled"
+            "Smithing Table Armor Trim",
+            "Smithing Table Transformation"
         ]
 
         Font = TkFont.Font(family="HP Simplified Jpan", size=13)
@@ -289,6 +322,12 @@ class RecipeGenerator(tk.Tk):
         if Selection == "Brewing Stand":
             self.BrewingStand()
 
+        if Selection == "Smithing Table Armor Trim":
+            self.SmithingTableTrim()
+
+        if Selection == "Smithing Table Transformation":
+            self.SmithingTableTransformation()
+
     def CraftingMake(self):
 
         if self.Current_Station is None:
@@ -304,6 +343,9 @@ class RecipeGenerator(tk.Tk):
         self.Input = None
         self.Output = None
         self.Reagent = None
+        self.Base = None
+        self.Template = None
+        self.Addition = None
 
         Downloads_Folder = os.path.join(os.path.expanduser("~"), "Downloads")
 
@@ -409,6 +451,73 @@ class RecipeGenerator(tk.Tk):
             with open(FileName, 'w') as f:
                 f.write(Json_Data)
 
+        if self.Current_Station == "Smithing Table Armor Trim":
+
+            self.RecipeId = self.Text_Data[0].get("1.0", tk.END).strip() or " "
+            self.Template = self.Text_Data[1].get("1.0", tk.END).strip() or " "
+            self.Base = self.Text_Data[2].get("1.0", tk.END).strip() or " "
+            self.Addition = self.Text_Data[3].get("1.0", tk.END).strip() or " "
+        
+            SmithingTableData = {
+                "format_version": "1.20.10",
+                "minecraft:recipe_smithing_trim": {
+                    "description": {
+                        "identifier": self.RecipeId
+                    },
+                    "tags": [
+                        "smithing_table"
+                    ],
+                    "template": self.Template,
+                    "base": self.Base,
+                    "addition": self.Addition,
+                }
+            }
+
+            FixedFileName = self.RecipeId.replace(":", "_")
+            Json_Data = json.dumps(SmithingTableData, indent=4)
+            FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
+
+            # Write JSON Data To A File
+            with open(FileName, 'w') as f:
+                f.write(Json_Data)
+
+        if self.Current_Station == "Smithing Table Transformation":
+
+            self.RecipeId = self.Text_Data[0].get("1.0", tk.END).strip() or " "
+            self.ItemId = self.Text_Data[1].get("1.0", tk.END).strip() or " "
+            self.ItemAmount = self.Text_Data[2].get("1.0", tk.END).strip() or " "
+            self.Template = self.Text_Data[3].get("1.0", tk.END).strip() or " "
+            self.Base = self.Text_Data[4].get("1.0", tk.END).strip() or " "
+        
+            SmithingTableData = {
+                "format_version": "1.20.10",
+                "minecraft:recipe_smithing_transform": {
+                    "description": {
+                        "identifier": self.RecipeId
+                    },
+                    "tags": [
+                        "smithing_table"
+                    ],
+                    "template": self.Template,
+                    "base": self.Base,
+                    "addition": "minecraft:netherite_ingot",
+                    "result": [
+                        {
+                            "item": self.ItemId,
+                            "count": self.ItemAmount
+                        }
+                    ]
+                }
+            }
+
+            FixedFileName = self.RecipeId.replace(":", "_")
+            Json_Data = json.dumps(SmithingTableData, indent=4)
+            FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
+
+            # Write JSON Data To A File
+            with open(FileName, 'w') as f:
+                f.write(Json_Data)
+  
     # A Function To Remove Crafting Station Assets
     def CraftingStationRemove(self, Current_Station):
 
@@ -455,6 +564,41 @@ class RecipeGenerator(tk.Tk):
             
             if self.Brewing_Stand_TextBoxes:
                 for TextBoxes in self.Brewing_Stand_TextBoxes.values():
+                    TextBoxes.place_forget()
+
+        
+        for Station, Label in self.Smithing_Table_Armor_Trim_Labels.items():
+
+            self.Text_Data = []
+
+            if Station != Current_Station:
+                if Label:
+                    Label.place_forget()
+
+            for Station, Label in self.Smithing_Table_Armor_Trim_UI_Labels.items():
+                if Station != Current_Station:
+                    if Label:
+                        Label.place_forget()
+            
+            if self.Smithing_Table_Armor_Trim_TextBoxes:
+                for TextBoxes in self.Smithing_Table_Armor_Trim_TextBoxes.values():
+                    TextBoxes.place_forget()
+
+        for Station, Label in self.Smithing_Table_Transformation_Labels.items():
+
+            self.Text_Data = []
+
+            if Station != Current_Station:
+                if Label:
+                    Label.place_forget()
+
+            for Station, Label in self.Smithing_Table_Transformation_UI_Labels.items():
+                if Station != Current_Station:
+                    if Label:
+                        Label.place_forget()
+            
+            if self.Smithing_Table_Transformation_TextBoxes:
+                for TextBoxes in self.Smithing_Table_Transformation_TextBoxes.values():
                     TextBoxes.place_forget()
 
     def Destroy_TextFieldBoxes(self):
@@ -544,7 +688,7 @@ class RecipeGenerator(tk.Tk):
         self.BrewingStand_Label = tk.Label(self, image=self.BrewingStand_Image, bg="black")
         self.BrewingStand_Label.place(x=self.Screen_Width - 600, y=0)
         
-        # Furnace UI Image
+        # Brewing Stand UI Image
         self.BrewingStand_UI_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Brewing_Stand_UI.png")).resize((600, 300))
         self.BrewingStand_UI_Image = ImageTk.PhotoImage(self.BrewingStand_UI_File)
 
@@ -574,7 +718,80 @@ class RecipeGenerator(tk.Tk):
             self.Brewing_Stand_TextBoxes["Textbox 3"] = Text_Box_3
 
         Brewing_Stand_Grid()
+    
+    def SmithingTableTrim(self):
+
+        self.SmithingTableTrim_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Smithing_Table.png")).resize((600, 600))
+        self.SmithingTableTrim_Image = ImageTk.PhotoImage(self.SmithingTableTrim_File)
+    
+        self.SmithingTableTrim_Label = tk.Label(self, image=self.SmithingTableTrim_Image, bg="black")
+        self.SmithingTableTrim_Label.place(x=self.Screen_Width - 600, y=0)
+
+        # Smithing Table Trim UI Image
+        self.SmithingTableTrim_UI_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Smithing_Table_Trim_UI.png")).resize((600, 300))
+        self.SmithingTableTrim_UI_Image = ImageTk.PhotoImage(self.SmithingTableTrim_UI_File)
+
+        self.SmithingTableTrim_UI_Label = tk.Label(self, image=self.SmithingTableTrim_UI_Image, bg="black")
+        self.SmithingTableTrim_UI_Label.place(x=self.Screen_Width - 1524, y=100)
+
+        # Add to the dictionary
+        self.Smithing_Table_Armor_Trim_Labels["Smithing Table Trim"] = self.SmithingTableTrim_Label
+        self.Smithing_Table_Armor_Trim_UI_Labels["Smithing Table Trim UI"] = self.SmithingTableTrim_UI_Label
+
+        def Smithing_Table_Trim_Grid():
+            
+            Text_Box = tk.Text(self, wrap=tk.WORD, width=6, height=3, bg="#8D8D8D")
+            Text_Box.place(x=self.Screen_Width - 1495, y=265)
+            self.Text_Data.append(Text_Box)
+
+            Text_Box_2 = tk.Text(self, wrap=tk.WORD, width=6, height=3, bg="#8D8D8D")
+            Text_Box_2.place(x=self.Screen_Width - 1433, y=265)
+            self.Text_Data.append(Text_Box_2)
+
+            Text_Box_3 = tk.Text(self, wrap=tk.WORD, width=6, height=3, bg="#8D8D8D")
+            Text_Box_3.place(x=self.Screen_Width - 1371, y=265)
+            self.Text_Data.append(Text_Box_3)
+            
+            self.Smithing_Table_Armor_Trim_TextBoxes["Textbox 1"] = Text_Box
+            self.Smithing_Table_Armor_Trim_TextBoxes["Textbox 2"] = Text_Box_2
+            self.Smithing_Table_Armor_Trim_TextBoxes["Textbox 3"] = Text_Box_3
+
+        Smithing_Table_Trim_Grid()
+
+    def SmithingTableTransformation(self):
         
+        self.SmithingTableTransformation_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Smithing_Table.png")).resize((600, 600))
+        self.SmithingTableTransformation_Image = ImageTk.PhotoImage(self.SmithingTableTransformation_File)
+    
+        self.SmithingTableTransformation_Label = tk.Label(self, image=self.SmithingTableTransformation_Image, bg="black")
+        self.SmithingTableTransformation_Label.place(x=self.Screen_Width - 600, y=0)
+
+        # Smithing Table Transformation UI Image
+        self.SmithingTableTransformation_UI_File = Image.open(os.path.join(self.MasterCraftCurrentDirectory, "Textures", "Smithing_Table_Transformation_UI.png")).resize((600, 300))
+        self.SmithingTableTransformation_UI_Image = ImageTk.PhotoImage(self.SmithingTableTransformation_UI_File)
+
+        self.SmithingTableTransformation_UI_Label = tk.Label(self, image=self.SmithingTableTransformation_UI_Image, bg="black")
+        self.SmithingTableTransformation_UI_Label.place(x=self.Screen_Width - 1524, y=100)
+
+        # Add to the dictionary
+        self.Smithing_Table_Transformation_Labels["Smithing Table Transformation"] = self.SmithingTableTransformation_Label
+        self.Smithing_Table_Transformation_UI_Labels["Smithing Table Transformation UI"] = self.SmithingTableTransformation_UI_Label
+
+        def Smithing_Table_Transformation_Grid():
+            
+            Text_Box = tk.Text(self, wrap=tk.WORD, width=6, height=3, bg="#8D8D8D")
+            Text_Box.place(x=self.Screen_Width - 1495, y=265)
+            self.Text_Data.append(Text_Box)
+
+            Text_Box_2 = tk.Text(self, wrap=tk.WORD, width=6, height=3, bg="#8D8D8D")
+            Text_Box_2.place(x=self.Screen_Width - 1433, y=265)
+            self.Text_Data.append(Text_Box_2)
+            
+            self.Smithing_Table_Transformation_TextBoxes["Textbox 1"] = Text_Box
+            self.Smithing_Table_Transformation_TextBoxes["Textbox 2"] = Text_Box_2
+
+        Smithing_Table_Transformation_Grid()
+
 def Main():
     App = RecipeGenerator()
     App.mainloop()
