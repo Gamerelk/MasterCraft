@@ -1,6 +1,6 @@
 # MasterCraft
 
-This Program Helps Create Complex Features In A Simple To Read Program
+This Program Helps Create Complex Features In A Simple To Read Program. This Program Is Meant For Minecraft Bedrock Edition, Not For Minecraft Java Edition.
 
 # Version 1
 Added Recipe Generators For The Following Crafting Stations:
