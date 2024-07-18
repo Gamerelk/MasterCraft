@@ -11,12 +11,11 @@ import ctypes as ct
 MINIMUM_WINDOW_WIDTH = 600
 MINIMUM_WINDOW_HEIGHT = 400
 
+# Recipe Generator Screen
 class RecipeGenerator(tk.Tk):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        self.protocol("WM_DELETE_WINDOW", ReturnSequence)
 
         # Getting User Pathway
         self.User_Home = os.path.expanduser("~")
@@ -35,7 +34,7 @@ class RecipeGenerator(tk.Tk):
         self.Text_Data = []
 
         # Set The Title Of The Window
-        self.title("Recipe Generator")
+        self.title("MasterCraft - Recipe Generator")
 
         # Set The Icon Of The Window
         Icon_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "Textures", "IconImage.ico")
@@ -811,22 +810,31 @@ def ReturnSequence():
             Common_User_Directories = ['Desktop', 'Downloads', 'Pictures', 'Documents', 'Music', 'Videos']
 
             def Common_Directory():
+
                 for Common_Directories in Common_User_Directories:
+
                     Common_Dir = os.path.join(User_Home, Common_Directories)
+
                     for root, dirnames, _ in os.walk(Common_Dir):
+
                         if DirectoryName in dirnames:
                             return os.path.join(root, DirectoryName)
                 return None
 
             def Full_Search_Directory():
+
                 matches = []
+
                 for root, dirnames, _ in os.walk(InitialDirectory):
+
                     if DirectoryName in dirnames:
                         matches.append(os.path.join(root, DirectoryName))
                 return matches
 
             def DirectoryPathfinding():
+
                 InitialDirectoryTest = Common_Directory()
+                
                 if InitialDirectoryTest is None:
                     return Full_Search_Directory()
                 else:

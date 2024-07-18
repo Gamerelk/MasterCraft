@@ -8,8 +8,8 @@ import ctypes as ct
 # Constants
 MINIMUM_WINDOW_WIDTH = 600
 MINIMUM_WINDOW_HEIGHT = 400
-BUTTON_SPACING = 2.1
-NUM_BUTTONS = 5
+BUTTON_SPACING = 1.7
+NUM_BUTTONS = 6
 
 # MasterCraft Screen
 class MasterCraftApp(tk.Tk):
@@ -173,17 +173,19 @@ class MasterCraftApp(tk.Tk):
         Button_Actions = [
             self.OBJ_To_JSON_Converter,
             self.Recipe_Generator,
-            self.button3_action,
-            self.button4_action,
-            self.button5_action
+            self.Font_Generator,
+            self.Manifest_Generator,
+            self.Button_6,
+            self.Vanilla_Templates
         ]
 
         Button_Labels = [
             "Object To Json Model Converter",
             "Recipe Generator",
-            "Untitled",
-            "Untitled",
-            "Untitled"
+            "Minecraft Font Generator",
+            "Minecraft Manifest Generator",
+            "Button 5 But Written As 6",
+            "Minecraft Vanilla Templates"
         ]
 
         self.Button_Images = {
@@ -228,13 +230,22 @@ class MasterCraftApp(tk.Tk):
         self.destroy()
         ReturnSequence(Selected)
 
-    def button3_action(self):
-        print("Button 3 was pressed")
+    def Font_Generator(self):
+        
+        Selected = "Font Generator"
+        self.destroy()
+        ReturnSequence(Selected)
 
-    def button4_action(self):
-        print("Button 4 was pressed")
+    def Manifest_Generator(self):
 
-    def button5_action(self):
+        Selected = "Manifest Generator"
+        self.destroy()
+        ReturnSequence(Selected)
+
+    def Button_6(self):
+        print("s")
+
+    def Vanilla_Templates(self):
         print("Button 5 was pressed")
 
     # A Functions That Handles Switching The Button Hover Event
@@ -283,6 +294,14 @@ def ReturnSequence(Selection):
 
         if Selection == "Recipe Generator":
             Script_Path = os.path.join(MasterCraftCurrentDirectory, "ScriptAPI", "Custom_Recipe_Generator.py")
+            call(["python", Script_Path])
+
+        if Selection == "Font Generator":
+            Script_Path = os.path.join(MasterCraftCurrentDirectory, "ScriptAPI", "Minecraft_Font_Generator.py")
+            call(["python", Script_Path])
+
+        if Selection == "Manifest Generator":
+            Script_Path = os.path.join(MasterCraftCurrentDirectory, "ScriptAPI", "Minecraft_Manifest_Generator.py")
             call(["python", Script_Path])
 
 def Main():
