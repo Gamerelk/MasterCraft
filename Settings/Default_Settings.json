@@ -1,0 +1,47 @@
+{
+    "Main Menu":{
+        "Enable Panorama Background": false,
+        "Default Panorama Background": "None",
+        "Default Panorama Rotation Speed": "0.05"
+    },
+
+    "Font Menu":{
+        "Enable Panorama Background": false,
+        "Default Panorama Background": "None",
+        "Default Panorama Rotation Speed": "0.05"
+    },
+
+    "Recipe Menu":{
+        "Enable Panorama Background": false,
+        "Default Panorama Background": "None",
+        "Default Panorama Rotation Speed": "0.05"
+    },
+
+    "Manifest Menu":{
+        "Enable Panorama Background": false,
+        "Default Panorama Background": "None",
+        "Default Panorama Rotation Speed": "0.05",
+        "Default Manifest Type": "Behavior And Resource Manifest",
+        "Default Layout": "Beautified",
+        "Default Text Header Color": "#719EC8",
+        "Default Text Color": "#ABCEFF",
+        "Default Text Special Characters": "#FFFFFF"
+    },
+
+    "Code Builder Menu":{
+        "Default Text Color": "#ABCEFF",
+        "Default Import Color": "#C62828",
+        "Default Control Color": "#ffab19",
+        "Default World Color": "#447B46",
+        "Default Player Color": "#4c97ff",
+        "Default Dimension Color": "#422599",
+        "Default Entity Color": "#9966ff",
+        "Default Custom Color": "#26C6DA"
+    },
+
+    "Panorama Creator Menu":{
+        "Enable Minecraft Overlay": true,
+        "Enable Vsync": true,
+        "Default Rotation Speed":"0.05"
+    }
+}
