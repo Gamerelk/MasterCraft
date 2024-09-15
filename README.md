@@ -42,7 +42,7 @@ At This Point You Should Be Set To Go. Since This Project Was Intended For Flexi
 
 ## Warning/Note
 
-This Program Is In Its Alpha Stages... So Not Everything Is Working (Visually Or Mechanically) As Intended In Some Cases. In Addition, There Are Some Scripts That Require Folders That Exceed Github's Size Limit, So Some Scripts My Not Functionally Work At All Like The Version Swapper Or Host Server. This Project At The Moment, Is A Baseline Of What It Can Be. There Is So Much Potential That Can Implemented Or Developed For This Program.
+This Program Is In Its Alpha Stages... So Not Everything Is Working (Visually Or Mechanically) As Intended In Some Cases. In Addition, There Are Some Scripts That Require Folders That Exceed Github's Size Limit, So Some Scripts May Not Functionally Work At All Like The Version Swapper Or Host Server. This Project At The Moment, Is A Baseline Of What It Can Be. There Is So Much Potential That Can Implemented Or Developed For This Program.
 
 I May Be The Only Person Contributing To This Project. But It Doesn't Mean That I Was The Only Person To Directly Code This Project. I've Used Some Code From **Other Projects** And The Use **AI** To Help Code For Me.
 I Do Not Intend To Make This Project Restricted In A Paywall, Nor Wish To See This Project Used For Malicious Use. I Only Wish To Help Improve This Project Further On Its Development Openly. If You See An Issue With My Code Or See Something That Can Optimize The MasterCraft Program. I Am In Open Hands To Adjust The Code.
