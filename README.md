@@ -1,24 +1,28 @@
 # MasterCraft
 
-This Program Helps Create Complex Features In A Simple To Read Program. This Program Is Meant For Minecraft Bedrock Edition, Not For Minecraft Java Edition.
+**MasterCraft** is a program designed to help create complex features for **Minecraft Bedrock Edition** in a simple and user-friendly manner. Please note that this program is *not* intended for **Minecraft Java Edition**.
 
-# Version 1
-Added Recipe Generators For The Following Crafting Stations:
-- Crafting Table
-- Furnace
+## Features
 
-Also Fixed TextBox Elements From Being Removed
+MasterCraft includes a variety of powerful tools:
 
-# Version 1.1
+- **Font Generator**: Easily create and customize fonts.
+- **Recipe Generator**: Simplify the process of creating crafting recipes.
+- **Manifest Generator**: Automate the generation of manifest files.
+- **Achievement Fixer**: Correct issues with achievements.
+- **Panorama Creator**: Create dynamic Minecraft panorama backgrounds.
+- **JSON to Object Converter**: Convert JSON data to object formats and vice versa.
+- **Custom Notifications**: Add sliding animation notifications to your projects.
+- **3D Letter Rendering**: Render 3D letters with OpenGL and Pygame.
+  
+## Version
 
-Added Recipe Generator:
-- Brewing Stand
+- **Version 1.0.0-Alpha**
 
-Reworked The Code For Better Code Expansion For Future Crafting Stations.
-Also Change The Textboxes To Appear Specific To The Crafting Station
+This is the first alpha release of MasterCraft. Expect future updates with additional features and improvements.
 
-# Version 1.2
+## Getting Started
 
-Added Recipe Generators For The Following Crafting Stations:
-- Smithing Table Trim
-- Smithing Table Transformation
+1. Clone this repository: 
+   ```bash
+   git clone https://github.com/your-repo/mastercraft.git
