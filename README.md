@@ -6,7 +6,7 @@
 
 - **Version 1.0.0-Alpha**
 
-This is the first alpha release of MasterCraft. Expect future updates with additional features and improvements.
+This Is The First Alpha Release Of MasterCraft. Expect Future Updates With Additional Features And Improvements.
 
 ## Features
 
@@ -30,6 +30,17 @@ MasterCraft includes a variety of powerful tools:
 
 1. Clone This Repository: 
    ```bash
-   git clone https://github.com/your-repo/mastercraft.git
+   git clone https://github.com/Gamerelk/MasterCraft/mastercraft.git
    ```
    Or Simply Download The Repositories Zip File
+2. Have Python Installed On Your OS (If Not Download Here https://www.python.org/ Or In Your Os Store)
+3. (Optional) Install Vscode And Connect Your Python To It
+4. Make Sure To Install The Dependices Your Missing From The Scripts (e.g. Trimesh, Pygame, OpenGL, Tkinter, Pillow, Etc) Using Pip Or Any Other Dependency Installer
+5. Run The Main Python Script "MasterCraft_MainScreen.py"
+
+At This Point You Should Be Set To Go. Since This Project Was Intended For Flexiablity And Ease Of Use. Most Of The Scripts Provide A GUI Instead Of Using The Terminal.
+
+## Warning/Note
+
+I May Be The Only Person Contributing To This Project. But It Doesn't Mean That I Was The Only Person To Directly Code This Project. I've Used Some Code From **Other Projects** And The Use **AI** To Help Code For Me.
+I Do Not Intend To Make This Project Restricted In A Paywall, Nor Wish To See This Project Used For Malicious Use. I Only Wish To Help Improve This Project Further On Its Development Openly. If You See An Issue With My Code Or See Something That Can Optimize The MasterCraft Program. I Am In Open Hands To Adjust The Code.
