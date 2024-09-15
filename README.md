@@ -10,7 +10,7 @@ This Is The First Alpha Release Of MasterCraft. Expect Future Updates With Addit
 
 ## Features
 
-MasterCraft includes a variety of powerful tools:
+MasterCraft Includes A Variety Of Powerful Tools:
 
 - **Recipe Generator**: Simplify The Process Of Creating Crafting Recipes.
 - **Font Generator**: Easily Create Text Using Minecraft-Like Font. Also Converts TTF Files Into Glyph Files.
