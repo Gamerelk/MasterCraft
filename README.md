@@ -33,10 +33,11 @@ MasterCraft Includes A Variety Of Powerful Tools:
    git clone https://github.com/Gamerelk/MasterCraft.git
    ```
    Or Simply Download The Repositories Zip File
-2. Have Python Installed On Your OS (If Not Download Here https://www.python.org/ Or In Your Os Store)
-3. (Optional) Install Vscode And Connect Your Python To It
-4. Make Sure To Install The Dependices Your Missing From The Scripts (e.g. Trimesh, Pygame, OpenGL, Tkinter, Pillow, Etc) Using Pip Or Any Other Dependency Installer
-5. Run The Main Python Script "MasterCraft_MainScreen.py"
+2. Make Sure To Rename The Extracted Zip Folder "MasterCraft" And Not "MasterCraft-main". Since The Python Scripts Will Break
+3. Have Python Installed On Your OS (If Not Download Here https://www.python.org/ Or In Your Os Store)
+4. (Optional) Install Vscode And Connect Your Python To It
+5. Make Sure To Install The Dependices Your Missing From The Scripts (e.g. Trimesh, Pygame, OpenGL, Tkinter, Pillow, Etc) Using Pip Or Any Other Dependency Installer
+6. Run The Main Python Script "MasterCraft_MainScreen.py"
 
 At This Point You Should Be Set To Go. Since This Project Was Intended For Flexibility And Ease Of Use. Most Of The Scripts Provide A GUI Instead Of Using The Terminal.
 
