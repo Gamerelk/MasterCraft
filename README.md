@@ -38,7 +38,7 @@ MasterCraft Includes A Variety Of Powerful Tools:
 4. Make Sure To Install The Dependices Your Missing From The Scripts (e.g. Trimesh, Pygame, OpenGL, Tkinter, Pillow, Etc) Using Pip Or Any Other Dependency Installer
 5. Run The Main Python Script "MasterCraft_MainScreen.py"
 
-At This Point You Should Be Set To Go. Since This Project Was Intended For Flexiablity And Ease Of Use. Most Of The Scripts Provide A GUI Instead Of Using The Terminal.
+At This Point You Should Be Set To Go. Since This Project Was Intended For Flexibility And Ease Of Use. Most Of The Scripts Provide A GUI Instead Of Using The Terminal.
 
 ## Warning/Note
 
