@@ -1,6 +1,7 @@
 import json
 from tkinter import Tk, filedialog
 import os
+import math
 
 class JsonToObjectApp():
 
@@ -20,8 +21,17 @@ class JsonToObjectApp():
 
         Json_Data = self.Load_Json(Json_File_Path)
 
+        self.Initialize_Variables()
+
         if Json_Data:
             self.Create_Object_Modal(Json_Data)
+        
+
+    def Initialize_Variables(self):
+
+        self.X_Flip = True
+        self.Y_Flip = False
+        self.Z_Flip = False
 
     def Load_Json(self, File_Path):
 
@@ -45,41 +55,96 @@ class JsonToObjectApp():
     def Create_Object_Modal(self, Json_Data):
 
         # Extract Cubes From The JSON
-        Cubes = Json_Data['minecraft:geometry'][0]['bones'][0]['cubes']
+        Geometry_Data = Json_Data.get('minecraft:geometry', [])
 
         Vertices = []
         Faces = []
 
-        for Cube in Cubes:
+        for Geometry in Geometry_Data:
 
-            Origin = Cube['origin']
-            Size = Cube['size']
+            Folders = Geometry.get('bones', [])
+            
+            for Folder in Folders:
 
-            # Calculate Cube Vertices
-            X, Y, Z = Origin
-            DX, DY, DZ = Size
+                # Extract Cubes From Each Folder
+                Cubes = Folder.get('cubes', [])
 
-            Cube_Vertices = [
-                [X, Y, Z], [X + DX, Y, Z], [X + DX, Y + DY, Z], [X, Y + DY, Z],
-                [X, Y, Z + DZ], [X + DX, Y, Z + DZ], [X + DX, Y + DY, Z + DZ], [X, Y + DY, Z + DZ]
-            ]
+                for Cube in Cubes:
 
-            # Add Cube Vertices To The Array
-            Vertex_Start = len(Vertices) + 1
-            Vertices.extend(Cube_Vertices)
+                    Origin = Cube['origin']
+                    Size = Cube['size']
+                    Pivot = Cube.get('pivot', [0, 0, 0])
+                    Rotation = Cube.get('rotation', [0, 0, 0])
 
-            # Define Faces For The Cube (6 Faces, Each With 4 Vertices)
+                    # Calculate Cube Vertices
+                    X, Y, Z = Origin
+                    DX, DY, DZ = Size
 
-            Cube_Faces = [
-                [Vertex_Start, Vertex_Start + 1, Vertex_Start + 2, Vertex_Start + 3],
-                [Vertex_Start + 4, Vertex_Start + 5, Vertex_Start + 6, Vertex_Start + 7],
-                [Vertex_Start, Vertex_Start + 4, Vertex_Start + 7, Vertex_Start + 3],
-                [Vertex_Start + 1, Vertex_Start + 5, Vertex_Start + 6, Vertex_Start + 2],
-                [Vertex_Start, Vertex_Start + 1, Vertex_Start + 5, Vertex_Start + 4],
-                [Vertex_Start + 3, Vertex_Start + 2, Vertex_Start + 6, Vertex_Start + 7]
-            ]
+                    Cube_Vertices = [
+                        [X, Y, Z], [X + DX, Y, Z], [X + DX, Y + DY, Z], [X, Y + DY, Z],
+                        [X, Y, Z + DZ], [X + DX, Y, Z + DZ], [X + DX, Y + DY, Z + DZ], [X, Y + DY, Z + DZ]
+                    ]
 
-            Faces.extend(Cube_Faces)
+                    def ApplyRotation(Vertices, Rotation, Pivot):
+
+                        Rotated_Vertices = []
+                        PX, PY, PZ = Pivot
+                        RX, RY, RZ = [math.radians(Angle) for Angle in Rotation]
+
+                        for Vertex in Vertices:
+
+                            X, Y, Z = Vertex
+
+                            # Translate To Origin
+                            X, Y, Z = X - PX, Y - PY, Z - PZ
+
+                            # Rotate X-Axis
+                            Y, Z = Y * math.cos(-RX) - Z * math.sin(-RX), Y * math.sin(-RX) + Z * math.cos(-RX)
+
+                            # Rotate Y-Axis
+                            X, Z = X * math.cos(RY) + Z * math.sin(RY), -X * math.sin(RY) + Z * math.cos(RY)
+                            
+                            # Rotate Z-Axis
+                            X, Y = X * math.cos(-RZ) - Y * math.sin(-RZ), X * math.sin(-RZ) + Y * math.cos(-RZ)
+
+                            # Translate Back
+                            Rotated_Vertices.append([X + PX, Y + PY, Z + PZ])
+
+                        return Rotated_Vertices
+
+                    Rotated_Vertices = ApplyRotation(Cube_Vertices, Rotation, Pivot)
+
+                    if self.X_Flip:
+
+                        for Cubes in Rotated_Vertices:
+                            Cubes[0] = Cubes[0] * -1
+
+                    if self.Y_Flip:
+
+                        for Cubes in Rotated_Vertices:
+                            Cubes[1] = Cubes[1] * -1
+                        
+                    if self.Z_Flip:
+
+                        for Cubes in Rotated_Vertices:
+                            Cubes[2] = Cubes[2] * -1
+
+                    # Add Cube Vertices To The Array
+                    Vertex_Start = len(Vertices) + 1
+                    Vertices.extend(Rotated_Vertices)
+
+                    # Define Faces For The Cube (6 Faces, Each With 4 Vertices)
+
+                    Cube_Faces = [
+                        [Vertex_Start, Vertex_Start + 1, Vertex_Start + 2, Vertex_Start + 3],
+                        [Vertex_Start + 4, Vertex_Start + 5, Vertex_Start + 6, Vertex_Start + 7],
+                        [Vertex_Start, Vertex_Start + 4, Vertex_Start + 7, Vertex_Start + 3],
+                        [Vertex_Start + 1, Vertex_Start + 5, Vertex_Start + 6, Vertex_Start + 2],
+                        [Vertex_Start, Vertex_Start + 1, Vertex_Start + 5, Vertex_Start + 4],
+                        [Vertex_Start + 3, Vertex_Start + 2, Vertex_Start + 6, Vertex_Start + 7]
+                    ]
+
+                    Faces.extend(Cube_Faces)
 
         Model_Name = "Converted_Model"
 
@@ -88,7 +153,7 @@ class JsonToObjectApp():
 
         # Write To OBJ File
         self.Write_Object_Data(Vertices, Faces, Output_File)
-
+                        
     def SearchDirectory(self):
 
         self.InitialDirectory = '/'
