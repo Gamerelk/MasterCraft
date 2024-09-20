@@ -40,6 +40,8 @@ class JsonToObjectApp():
         self.X_Flip = True
         self.Y_Flip = False
         self.Z_Flip = False
+        self.UV_Flip_X = False
+        self.UV_Flip_Y = True
 
     def Load_Json(self, File_Path):
 
@@ -192,12 +194,50 @@ class JsonToObjectApp():
 
                         UV_Position_X, UV_Position_Y = UV_Data['uv']
                         UV_Size_X, UV_Size_Y = UV_Data['uv_size']
-                           
-                        # Normalize UV Coordinates
-                        UV_Top_Left_X, UV_Top_Left_Y = UV_Position_X / Texture_Width, 1 - (UV_Position_Y / Texture_Height)
-                        UV_Bottom_Right_X, UV_Bottom_Right_Y = (UV_Position_X + UV_Size_X) / Texture_Width, 1 - ((UV_Position_Y + UV_Size_Y) / Texture_Height)
+                        
+                        def Calculate_UV():
 
-                        UV_Coords.extend([(UV_Top_Left_X, UV_Top_Left_Y), (UV_Bottom_Right_X, UV_Top_Left_X), (UV_Bottom_Right_X, UV_Bottom_Right_Y), (UV_Top_Left_X, UV_Bottom_Right_Y)])
+                            # Normalize UV Coordinates
+                            UV_Left_X, UV_Top_Y = UV_Position_X / Texture_Width, 1 - (UV_Position_Y / Texture_Height)
+                            UV_Right_X, UV_Bottom_Y = (UV_Position_X + UV_Size_X) / Texture_Width, 1 - ((UV_Position_Y + UV_Size_Y) / Texture_Height)
+
+                            # Flip UV in the X axis
+                            if self.UV_Flip_X and not self.UV_Flip_Y:
+                                UV_Coords.extend([
+                                    (UV_Right_X, UV_Top_Y),
+                                    (UV_Left_X, UV_Top_Y),
+                                    (UV_Left_X, UV_Bottom_Y),
+                                    (UV_Right_X, UV_Bottom_Y)
+                                ])
+
+                            # Flip UV in the Y axis
+                            elif self.UV_Flip_Y and not self.UV_Flip_X:
+                                UV_Coords.extend([
+                                    (UV_Left_X, UV_Bottom_Y), 
+                                    (UV_Right_X, UV_Bottom_Y),
+                                    (UV_Right_X, UV_Top_Y), 
+                                    (UV_Left_X, UV_Top_Y)
+                                ])
+                                
+                            # Flip UV in both X and Y axis
+                            elif self.UV_Flip_X and self.UV_Flip_Y:
+                                UV_Coords.extend([
+                                    (UV_Right_X, UV_Bottom_Y),
+                                    (UV_Left_X, UV_Bottom_Y),
+                                    (UV_Left_X, UV_Top_Y),
+                                    (UV_Right_X, UV_Top_Y)
+                                ])
+
+                            # No UV Flip
+                            else:
+                                UV_Coords.extend([
+                                    (UV_Left_X, UV_Top_Y), 
+                                    (UV_Right_X, UV_Top_Y), 
+                                    (UV_Right_X, UV_Bottom_Y), 
+                                    (UV_Left_X, UV_Bottom_Y)
+                                ])
+
+                        Calculate_UV()
 
                     # 24 UV Coordinates Per Cube (4 Per Face)
                     UV_Start = len(UV_Coords) - 23  
