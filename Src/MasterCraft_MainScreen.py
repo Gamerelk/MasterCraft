@@ -105,6 +105,7 @@ class MasterCraftApp(tk.Tk):
             (os.path.join(Icon_Directory, "Panorama_Creator.png"), "Panorama Creator"),
             (os.path.join(Icon_Directory, "Object_And _Json_Converter.png"), "Object To Json"),
             (os.path.join(Icon_Directory, "Object_And _Json_Converter.png"), "Json To Object"),
+            (os.path.join(Icon_Directory, "NBT_Editor.png"), "NBT Editor"),
             (os.path.join(Icon_Directory, "Re_Enable_Achievements.png"), "Re-Enable World Achivements"),
             (os.path.join(Icon_Directory, "Host_Server.png"), "Host Server"),
             (os.path.join(Icon_Directory, "Versions.png"), "Version Swapper"),
@@ -134,6 +135,7 @@ class MasterCraftApp(tk.Tk):
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Panorama Creator"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Object To Json"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Json To Object"),
+            (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "NBT Editor"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Re-Enable World Achivements"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Host Server"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Version Swapper"),
@@ -216,7 +218,8 @@ class MasterCraftApp(tk.Tk):
         self.Create_Category_Frame(Top_Row, "ADVANCED", "Complex Functions And Generators", [
             "Panorama Creator",
             "Object To Json",
-            "Json To Object"
+            "Json To Object",
+            "NBT Editor"
         ])
         
         # Create Bottom Row Of Category Frames
@@ -299,6 +302,9 @@ class MasterCraftApp(tk.Tk):
 
         if Button_Text == "Json To Object":
             self.Show_JsonToObject()
+
+        if Button_Text == "NBT Editor":
+            self.Show_NBTEditor()
 
         if Button_Text == "Re-Enable World Achivements":
             self.Show_ReEnableWorldAchivements()
@@ -394,6 +400,15 @@ class MasterCraftApp(tk.Tk):
 
         Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "Src", "Minecraft_JSON_To_OBJ.py")
         subprocess.Popen(["python", Script_Path])
+
+    # A Function That Opens The NBT Editor
+    def Show_NBTEditor(self):
+
+        Script_Path = os.path.join(self.MasterCraftCurrentDirectory, "Src", "Minecraft_NBT_Editor.py")
+        subprocess.Popen(["python", Script_Path])
+
+        time.sleep(0.2)
+        self.destroy()
 
     # A Function That Opens Manifest Generator
     def Show_ReEnableWorldAchivements(self):
