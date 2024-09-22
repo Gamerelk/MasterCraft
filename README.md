@@ -21,6 +21,7 @@ MasterCraft Includes A Variety Of Powerful Tools:
 - **Panorama Creator**: Render And Create Dynamic Minecraft Cubemap Panorama Backgrounds From Both Minecraft And Custom Cubemaps.
 - **Object To JSON Converter**: Convert Object Model Data To JSON Formats. This Will Voxelize The Object Model
 - **JSON To Object Converter**: Convert JSON Data To Object Model Formats.
+- **NBT Editor**: View And Edit Minecraft Bedrock NBT Data.
 - **Achievement Fixer**: Correct Issues With Achievements.
 - **Host Server**: Host A Local Server.
 - **Version Swapper**: Swaps Minecraft Versions On Windows Computers.
