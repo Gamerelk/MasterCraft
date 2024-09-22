@@ -140,61 +140,48 @@ class FontGenerator(tk.Tk):
 
     def Notify(self, Message):
 
-        # Create A New Toplevel Window
-        Notification = tk.Toplevel(self)
-        Notification.overrideredirect(True)
-        Notification.attributes("-topmost", True)
+        # Create A Frame For The Notification
+        Notification_Frame = tk.Frame(self)
+        Notification_Frame.place(relx=0.5, y=-100, anchor='n', width=360, height=80)
 
         # Load Notification Image
         Notification_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "App_UI_Elements", "Textures", "Advancement.png")
         Notification_Image = Image.open(Notification_Image_Path)
-        Notification_Image = Notification_Image.resize((360, 80))
+        Notification_Image = Notification_Image.resize((360, 80), Image.Resampling.NEAREST)
         self.Notification_Image = ImageTk.PhotoImage(Notification_Image)
 
-        # Create Canvas And Add Notification Image
-        Canvas = tk.Canvas(Notification, width=360, height=80, highlightthickness=0)
-        Canvas.pack()
-        Canvas.create_image(0, 0, anchor=tk.NW, image=self.Notification_Image)
+        # Create Label And Add Notification Image
+        Label = tk.Label(Notification_Frame, image=self.Notification_Image)
+        Label.place(relx=0.5, rely=0.5, anchor='center')
 
         # Add Text
-        Canvas.create_text(180, 40, text=Message, fill="white", font=self.Custom_Fonts["Minecraft Seven v2"], width=320, anchor=tk.CENTER)
-
-        # Position The Window
-        Screen_Width = self.winfo_screenwidth()
-        X = int((Screen_Width / 2) - (360 / 2))
-        Y_Start = -100
-        Y_End  = 20
-        AnimationSpeed = 2
-        Notification.geometry(f"360x80+{X}+{Y_Start}")
+        Label.config(compound=tk.CENTER, text=Message, fg="white", font=self.Custom_Fonts["Minecraft Seven v2"])
 
         self.Play_Sound("Notify Recieve")
 
         # Animate Notification Slide Down
         def Slide_Down(Current_Y):
 
-            if Current_Y < Y_End:
-
-                Notification.geometry(f"360x80+{X}+{Current_Y}")
-                Notification.after(10, Slide_Down, Current_Y + AnimationSpeed) 
+            if Current_Y < 20:
+                Notification_Frame.place(y=Current_Y)
+                self.after(10, Slide_Down, Current_Y + 2)
 
             else:
-                Notification.geometry(f"360x80+{X}+{Y_End}")
-                Notification.after(3000, Slide_Up, Y_End)
+                self.after(3000, Slide_Up, 20)
 
         # Animate Notification Slide Up
         def Slide_Up(Current_Y):
 
-            if Current_Y > Y_Start:
-                Notification.geometry(f"360x80+{X}+{Current_Y}")
-                Notification.after(10, Slide_Up, Current_Y - AnimationSpeed)
+            if Current_Y > -100:
+                Notification_Frame.place(y=Current_Y)
+                self.after(10, Slide_Up, Current_Y - 2)
 
                 if Current_Y == 0:
                     self.Play_Sound("Notify Remove")
-                    
             else:
-                Notification.destroy()
+                Notification_Frame.destroy()
 
-        Slide_Down(Y_Start)
+        Slide_Down(-100)
 
     def Create_UI(self):
 
@@ -617,4 +604,3 @@ def Main():
 
 if __name__ == "__main__":
     Main()
-    
