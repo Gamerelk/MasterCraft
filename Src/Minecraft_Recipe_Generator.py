@@ -35,7 +35,7 @@ class RecipeGenerator(tk.Tk):
         # Set Initial Button Array
         self.Buttons = []
         self.Text_Data = []
-        
+       
         # Stores The Current Station Used
         self.Current_Station = None
 
@@ -47,6 +47,8 @@ class RecipeGenerator(tk.Tk):
 
         # Creating Minecraft UI 
         self.Create_UI()
+        
+        self.Screen_Width = self.winfo_screenwidth()
         
         # Crafting Station Dictionaries
 
@@ -135,6 +137,8 @@ class RecipeGenerator(tk.Tk):
             (os.path.join(Sound_Directory, "UI_Button_Press_2.ogg"), "Setting"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Generate Recipe"),
             (os.path.join(Sound_Directory, "UI_Button_Press.ogg"), "Back"),
+            (os.path.join(Sound_Directory, "UI_Notification_Recieved.ogg"), "Notify Recieve"),
+            (os.path.join(Sound_Directory, "UI_Notification_Removed.ogg"), "Notify Remove")
         ]
         
         for Sound_File, Button_Name in Sound_Files:
@@ -146,6 +150,51 @@ class RecipeGenerator(tk.Tk):
 
         if Sound:
             Sound.play()
+
+    def Notify(self, Message):
+
+        # Create A Frame For The Notification
+        Notification_Frame = tk.Frame(self)
+        Notification_Frame.place(relx=0.5, y=-100, anchor='n', width=360, height=80)
+
+        # Load Notification Image
+        Notification_Image_Path = os.path.join(self.MasterCraftCurrentDirectory, "App_UI_Elements", "Textures", "Advancement.png")
+        Notification_Image = Image.open(Notification_Image_Path)
+        Notification_Image = Notification_Image.resize((360, 80), Image.Resampling.NEAREST)
+        self.Notification_Image = ImageTk.PhotoImage(Notification_Image)
+
+        # Create Label And Add Notification Image
+        Label = tk.Label(Notification_Frame, image=self.Notification_Image)
+        Label.place(relx=0.5, rely=0.5, anchor='center')
+
+        # Add Text
+        Label.config(compound=tk.CENTER, text=Message, fg="white", font=self.Custom_Fonts["Minecraft Seven v2"])
+
+        self.Play_Sound("Notify Recieve")
+
+        # Animate Notification Slide Down
+        def Slide_Down(Current_Y):
+
+            if Current_Y < 20:
+                Notification_Frame.place(y=Current_Y)
+                self.after(10, Slide_Down, Current_Y + 2)
+
+            else:
+                self.after(3000, Slide_Up, 20)
+
+        # Animate Notification Slide Up
+        def Slide_Up(Current_Y):
+
+            if Current_Y > -100:
+                Notification_Frame.place(y=Current_Y)
+                self.after(10, Slide_Up, Current_Y - 2)
+
+                if Current_Y == 0:
+                    self.Play_Sound("Notify Remove")
+            else:
+                Notification_Frame.destroy()
+
+        Slide_Down(-100)
 
     def Create_UI(self):
 
@@ -335,6 +384,9 @@ class RecipeGenerator(tk.Tk):
             Json_Data = json.dumps(CraftingData, indent=4)
             FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
 
+            # Notify User
+            self.Notify("Generated Crafting Table Recipe")
+
             # Write JSON Data To A File
             with open(FileName, 'w') as f:
                 f.write(Json_Data)
@@ -362,6 +414,9 @@ class RecipeGenerator(tk.Tk):
             FixedFileName = self.RecipeId.replace(":", "_")
             Json_Data = json.dumps(FuranceData, indent=4)
             FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
+
+            # Notify User
+            self.Notify("Generated Furnace Recipe")
 
             # Write JSON Data To A File
             with open(FileName, 'w') as f:
@@ -393,6 +448,9 @@ class RecipeGenerator(tk.Tk):
             Json_Data = json.dumps(BrewingStandData, indent=4)
             FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
 
+            # Notify User
+            self.Notify("Generated Brewing Stand Recipe")
+
             # Write JSON Data To A File
             with open(FileName, 'w') as f:
                 f.write(Json_Data)
@@ -422,6 +480,9 @@ class RecipeGenerator(tk.Tk):
             FixedFileName = self.RecipeId.replace(":", "_")
             Json_Data = json.dumps(SmithingTableData, indent=4)
             FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
+
+            # Notify User
+            self.Notify("Generated Armor Trim Recipe")
 
             # Write JSON Data To A File
             with open(FileName, 'w') as f:
@@ -455,6 +516,9 @@ class RecipeGenerator(tk.Tk):
             FixedFileName = self.RecipeId.replace(":", "_")
             Json_Data = json.dumps(SmithingTableData, indent=4)
             FileName = os.path.join(Downloads_Folder, f"{FixedFileName}.json")
+
+            # Notify User
+            self.Notify("Generated Smithing Table Recipe")
 
             # Write JSON Data To A File
             with open(FileName, 'w') as f:
