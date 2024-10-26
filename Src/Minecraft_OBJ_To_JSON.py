@@ -4,6 +4,8 @@ import numpy as np
 import json
 import os
 
+import trimesh.scene
+
 class ObjectToJsonApp():
 
     def __init__(self):
@@ -26,7 +28,7 @@ class ObjectToJsonApp():
             return
 
         # Ask For Model Up Or Down Scaling
-        Scale_Factor = simpledialog.askfloat("Scale Factor", "Enter Scaling Factor (Model Size Range: 0.1-3):", minvalue=0.1, maxvalue=3.0)
+        Scale_Factor = simpledialog.askfloat("Scale Factor", "Enter Scaling Factor (Model Size Range: 0.1-50):", minvalue=0.1, maxvalue=50.0)
 
         if Scale_Factor is None:
             return
@@ -43,12 +45,13 @@ class ObjectToJsonApp():
         # Voxelize The Mesh
         Voxel_Matrix = self.Voxelize_Mesh(Mesh, Voxel_Size)
 
+        if Voxel_Matrix is None:
+            return
+        
         # Merge Voxels Into Larger Cubes If Possible
         Merged_Voxel_Cubes = self.Merge_Voxels(Voxel_Matrix)
 
         Model_Name = "Converted_Model"
-
-        Output_File = os.path.join(os.path.expanduser("~\\Downloads"), f"{Model_Name}.json")
 
         # Create Minecraft JSON Structure
         Minecraft_Json = self.Create_Minecraft_Json(Merged_Voxel_Cubes, Model_Name, Voxel_Size)
@@ -60,20 +63,62 @@ class ObjectToJsonApp():
             json.dump(Minecraft_Json, f, indent=4)
 
         print(f"Number Of Cubes Generated: {len(Merged_Voxel_Cubes)}")
+        print(f"Model Saved To: {Output_File}")
 
     def Load_Object(self, File_Path):
 
-        try:
-            Mesh = trimesh.load(File_Path)
-            return Mesh
+        if not File_Path:
+            return None
         
-        except Exception as e:
-            return 
+        try:
+
+            Mesh = trimesh.load(File_Path)
+
+            if isinstance(Mesh, trimesh.Scene):
+
+                # Get All Geometry From The Scene
+                Geometry = list(Mesh.geometry.values())
+
+                if not Geometry:
+                    return None
+
+                # If There Are Multiple Meshes, Combine Them
+                if len(Geometry) > 1:
+
+                    print(f"Found {len(Geometry)} Meshes, Combining Them...")
+                    Combined_Mesh = trimesh.util.concatenate(Geometry)
+
+                else:
+                    Combined_Mesh = Geometry[0]
+                
+                return Combined_Mesh
+            
+            else:
+                # If It's Already A Mesh, Return It Directly
+                return Mesh
+
+        
+        except Exception as Error:
+            return None
 
     def Voxelize_Mesh(self, Mesh, Voxel_Size):
 
-        Voxelized_Mesh = Mesh.voxelized(Voxel_Size)
-        return Voxelized_Mesh.matrix
+        try:
+
+            # Ensure The Mesh Is Watertight
+            if not Mesh.is_watertight:
+
+                print("Warning: Mesh Is Not Watertight, Attempting To Repair...")
+                Mesh.fill_holes()
+                
+            # Create A Voxel Grid
+            Voxelized_Mesh = Mesh.voxelized(pitch=Voxel_Size)
+            Voxelized_Mesh.fill()
+            return Voxelized_Mesh.matrix
+            
+        except Exception as Error:
+            print(f"Error During Voxelization: {str(Error)}")
+            return None
 
     def Merge_Voxels(self, Voxel_Matrix):
 
